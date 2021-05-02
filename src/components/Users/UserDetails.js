@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../store/actions";
-
+import axios from "axios";
 import { useSnackbar } from "notistack";
 
 import { Typography, useMediaQuery, Tooltip } from "@material-ui/core";
@@ -91,16 +91,7 @@ const UserDetails = (props) => {
     height: "50%",
   });
 
-  const {
-    success,
-    error,
-    loading,
-    selectedUser,
-    avatarIndex,
-    coursesPendingList,
-    coursesApprovedList,
-    coursesNoneEnrollList,
-  } = props;
+  const { success, error, loading, selectedUser, avatarIndex, coursesPendingList, coursesApprovedList, coursesNoneEnrollList } = props;
   const { onApproveCoursePending, onDisapproveCourse, onMessageReset } = props;
 
   const { enqueueSnackbar } = useSnackbar();
@@ -144,17 +135,19 @@ const UserDetails = (props) => {
                   <FolderIcon />
                 </Avatar>
               </ListItemAvatar>
-              <ListItemText
-                primary={course.tenKhoaHoc}
-                style={{ paddingRight: 60 }}
-              />
+              <ListItemText primary={course.tenKhoaHoc} style={{ paddingRight: 60 }} />
               <ListItemSecondaryAction>
                 <IconButton
                   edge="end"
                   aria-label="allow"
-                  onClick={() =>
-                    onApproveCoursePending(course.maKhoaHoc, selectedUser)
-                  }
+                  onClick={() => {
+                    onApproveCoursePending(course.maKhoaHoc, selectedUser);
+                    console.log("yes");
+                    axios.post("https://testingg-app.herokuapp.com/send-mail", {
+                      user: selectedUser,
+                      course,
+                    });
+                  }}
                 >
                   <Tooltip title="Approve" placement="left">
                     <ThumbUpAltIcon />
@@ -163,9 +156,9 @@ const UserDetails = (props) => {
                 <IconButton
                   edge="end"
                   aria-label="quickAllow"
-                  onClick={() =>
-                    onDisapproveCourse(course.maKhoaHoc, selectedUser)
-                  }
+                  onClick={() => {
+                    onDisapproveCourse(course.maKhoaHoc, selectedUser);
+                  }}
                 >
                   <Tooltip title="Ban" placement="right">
                     <BlockIcon />
@@ -193,13 +186,7 @@ const UserDetails = (props) => {
               </ListItemAvatar>
               <ListItemText primary={course.tenKhoaHoc} />
               <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  aria-label="quickAllow"
-                  onClick={() =>
-                    onDisapproveCourse(course.maKhoaHoc, selectedUser)
-                  }
-                >
+                <IconButton edge="end" aria-label="quickAllow" onClick={() => onDisapproveCourse(course.maKhoaHoc, selectedUser)}>
                   <Tooltip title="Ban" placement="right">
                     <BlockIcon />
                   </Tooltip>
@@ -226,13 +213,7 @@ const UserDetails = (props) => {
               </ListItemAvatar>
               <ListItemText primary={course.tenKhoaHoc} />
               <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  aria-label="block"
-                  onClick={() =>
-                    onApproveCoursePending(course.maKhoaHoc, selectedUser)
-                  }
-                >
+                <IconButton edge="end" aria-label="block" onClick={() => onApproveCoursePending(course.maKhoaHoc, selectedUser)}>
                   <Tooltip title="Approve" placement="right">
                     <ThumbUpAltIcon />
                   </Tooltip>
@@ -244,87 +225,38 @@ const UserDetails = (props) => {
       </Box>
     );
   }
-
+  console.log("selectedUser", props.selectedUser);
   return (
     <Card className={cx(styles.card, shadowStyles.root)}>
-      <Box
-        display="flex"
-        alignItems="center"
-        flexWrap={matches ? "nowrap" : "wrap"}
-      >
+      <Box display="flex" alignItems="center" flexWrap={matches ? "nowrap" : "wrap"}>
         <Box flexGrow={1} m={2}>
           <CardContent>
-            <Avatar
-              className={styles.avatar}
-              src={`https://i.pravatar.cc/150?img=${avatarIndex + 1}`}
-            />
+            <Avatar className={styles.avatar} src={`https://i.pravatar.cc/150?img=${avatarIndex + 1}`} />
             <h3 className={styles.heading}>{selectedUser.taiKhoan}</h3>
           </CardContent>
 
-          <ExpansionPanel
-            expanded={expanded === "panel1"}
-            onChange={handleChange("panel1")}
-            disabled={loading}
-          >
-            <ExpansionPanelSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1bh-content"
-              id="panel1bh-header"
-            >
-              <Typography className={styles.expanseHeading}>
-                Pending Courses
-              </Typography>
-              <Typography className={styles.secondaryHeading}>
-                Need approve to allow the user accessing
-              </Typography>
+          <ExpansionPanel expanded={expanded === "panel1"} onChange={handleChange("panel1")} disabled={loading}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1bh-content" id="panel1bh-header">
+              <Typography className={styles.expanseHeading}>Pending Courses</Typography>
+              <Typography className={styles.secondaryHeading}>Need approve to allow the user accessing</Typography>
             </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              {coursesPendingRender}
-            </ExpansionPanelDetails>
+            <ExpansionPanelDetails>{coursesPendingRender}</ExpansionPanelDetails>
           </ExpansionPanel>
 
-          <ExpansionPanel
-            expanded={expanded === "panel2"}
-            onChange={handleChange("panel2")}
-            disabled={loading}
-          >
-            <ExpansionPanelSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel2bh-content"
-              id="panel2bh-header"
-            >
-              <Typography className={styles.expanseHeading}>
-                Approved Courses
-              </Typography>
-              <Typography className={styles.secondaryHeading}>
-                The courses have already accessed by user
-              </Typography>
+          <ExpansionPanel expanded={expanded === "panel2"} onChange={handleChange("panel2")} disabled={loading}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2bh-content" id="panel2bh-header">
+              <Typography className={styles.expanseHeading}>Approved Courses</Typography>
+              <Typography className={styles.secondaryHeading}>The courses have already accessed by user</Typography>
             </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              {coursesApprovedRender}
-            </ExpansionPanelDetails>
+            <ExpansionPanelDetails>{coursesApprovedRender}</ExpansionPanelDetails>
           </ExpansionPanel>
 
-          <ExpansionPanel
-            expanded={expanded === "panel3"}
-            onChange={handleChange("panel3")}
-            disabled={loading}
-          >
-            <ExpansionPanelSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel3bh-content"
-              id="panel3bh-header"
-            >
-              <Typography className={styles.expanseHeading}>
-                Available courses
-              </Typography>
-              <Typography className={styles.secondaryHeading}>
-                Registing a course quickly for user
-              </Typography>
+          <ExpansionPanel expanded={expanded === "panel3"} onChange={handleChange("panel3")} disabled={loading}>
+            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3bh-content" id="panel3bh-header">
+              <Typography className={styles.expanseHeading}>Available courses</Typography>
+              <Typography className={styles.secondaryHeading}>Registing a course quickly for user</Typography>
             </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-              {coursesNoneEnrollListRender}
-            </ExpansionPanelDetails>
+            <ExpansionPanelDetails>{coursesNoneEnrollListRender}</ExpansionPanelDetails>
           </ExpansionPanel>
           {loading ? <Spinner /> : null}
         </Box>
@@ -352,10 +284,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onApproveCoursePending: (courseId, selectedUser) =>
-      dispatch(actions.approveCoursePending(courseId, selectedUser)),
-    onDisapproveCourse: (courseId, selectedUser) =>
-      dispatch(actions.disapproveCourse(courseId, selectedUser)),
+    onApproveCoursePending: (courseId, selectedUser) => dispatch(actions.approveCoursePending(courseId, selectedUser)),
+    onDisapproveCourse: (courseId, selectedUser) => dispatch(actions.disapproveCourse(courseId, selectedUser)),
     onMessageReset: () => dispatch(actions.clearMessage()),
   };
 };

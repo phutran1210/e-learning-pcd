@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import axios from "axios";
 import cx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -65,13 +65,41 @@ const ShowcaseCard = (props) => {
   const shadowStyles = useSoftRiseShadowStyles();
 
   const { isMe, error, success } = props;
-  const { imageLink, courseId, onEnroll, onUserClearMessage } = props;
+  // console.log("isMe:  ", isMe);
+  const { imageLink, courseId, onEnroll, onUserClearMessage, courseName } = props;
 
   const user = JSON.parse(localStorage.getItem("user"));
 
   const { enqueueSnackbar } = useSnackbar();
 
+  let [isRegisterSuccess, setRegisterSuccess] = useState(false);
+  // const checkRegisterSucess = () => {
+  // let listCourseRegisterSuccess=af{
+  // let taiKhoan = localStorage.getItem("user").taiKhoan;
+  //   console.log("yes");
+  //   const user = JSON.parse(localStorage.getItem("user"));
+  //   let taiKhoan = user.taiKhoan;
+
+  //   axios({
+  //     url: "http://localhost:5000/check-cource",
+  //     method: "GET",
+  //     data: {
+  //       taiKhoan,
+  //       text: "test",
+  //     },
+  //   })
+  //     .then((res) => {
+  //       console.log(res);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
+  // checkRegisterSucess();
   useEffect(() => {
+    // console.log("yes");
+    // checkRegisterSucess();
+
     if (success) {
       enqueueSnackbar(success, { variant: "success" });
       onUserClearMessage();
@@ -80,7 +108,7 @@ const ShowcaseCard = (props) => {
       enqueueSnackbar(error, { variant: "error" });
       onUserClearMessage();
     }
-  }, [error, success, enqueueSnackbar, onUserClearMessage]);
+  }, [error, success, enqueueSnackbar, onUserClearMessage, isRegisterSuccess]);
 
   const infoList = [
     { icon: <FindInPageIcon fontSize="small" />, text: "1 article" },
@@ -104,11 +132,7 @@ const ShowcaseCard = (props) => {
 
   return (
     <Card className={cx(cardStyles.root, shadowStyles.root)}>
-      {imageLink ? (
-        <CardMedia classes={mediaStyles} image={imageLink} />
-      ) : (
-        <Skeleton variant="rect" width={"100%"} height={150} />
-      )}
+      {imageLink ? <CardMedia classes={mediaStyles} image={imageLink} /> : <Skeleton variant="rect" width={"100%"} height={150} />}
       <Avatar className={cardStyles.avatar} src={"https://i.pravatar.cc/300"} />
 
       <Box mt={2}>
@@ -119,21 +143,13 @@ const ShowcaseCard = (props) => {
 
       {user && user.accessToken ? (
         <Box mx={2}>
-          <Button
-            size="small"
-            onClick={() => onEnroll(courseId, isMe)}
-            className={cardStyles.button}
-          >
+          <Button size="small" onClick={() => onEnroll(courseId, isMe)} className={cardStyles.button}>
             {isMe ? "Leave this course" : "Enroll Now"}
           </Button>
         </Box>
       ) : (
         <Box mx={2}>
-          <Box
-            component={Link}
-            to={"/sign-in"}
-            style={{ textDecoration: "none" }}
-          >
+          <Box component={Link} to={"/sign-in"} style={{ textDecoration: "none" }}>
             <Button size="small" className={cardStyles.button}>
               Login to Enroll
             </Button>
@@ -168,8 +184,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onEnroll: (courseId, isMe) =>
-      dispatch(actions.EnrollCourse(courseId, isMe)),
+    onEnroll: (courseId, isMe) => dispatch(actions.EnrollCourse(courseId, isMe)),
     onUserClearMessage: () => dispatch(actions.userClearMessage()),
   };
 };

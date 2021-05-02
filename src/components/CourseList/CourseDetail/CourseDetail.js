@@ -72,10 +72,7 @@ function CourseDetail(props) {
             nameList.push(user.taiKhoan);
             return (
               <Tooltip key={user.taiKhoan} title={user.taiKhoan}>
-                <Avatar
-                  alt={user.hoTen}
-                  src={`https://i.pravatar.cc/150?img=${index + 1}`}
-                />
+                <Avatar alt={user.hoTen} src={`https://i.pravatar.cc/150?img=${index + 1}`} />
               </Tooltip>
             );
           })}
@@ -89,16 +86,7 @@ function CourseDetail(props) {
     showAllUserRender = (
       <Box className={classes.chipBox}>
         {nameList.map((name, index) => (
-          <Chip
-            key={`${name}${index}`}
-            avatar={
-              <Avatar
-                alt={name}
-                src={`https://i.pravatar.cc/150?img=${index + 1}`}
-              />
-            }
-            label={name}
-          />
+          <Chip key={`${name}${index}`} avatar={<Avatar alt={name} src={`https://i.pravatar.cc/150?img=${index + 1}`} />} label={name} />
         ))}
       </Box>
     );
@@ -116,19 +104,9 @@ function CourseDetail(props) {
           <Grid container alignItems="center" style={{ minHeight: 350 }}>
             <Box mx={7} width={"100%"}>
               <Typography variant="h4" gutterBottom>
-                {loading ? (
-                  <Skeleton variant="text" width={"100%"} />
-                ) : (
-                  courseDetail.tenKhoaHoc
-                )}
+                {loading ? <Skeleton variant="text" width={"100%"} /> : courseDetail.tenKhoaHoc}
               </Typography>
-              <Typography gutterBottom>
-                {loading ? (
-                  <Skeleton variant="text" width={"100%"} />
-                ) : (
-                  courseDetail.moTa
-                )}
-              </Typography>
+              <Typography gutterBottom>{loading ? <Skeleton variant="text" width={"100%"} /> : courseDetail.moTa}</Typography>
               <HoverRating />
 
               <Box>
@@ -150,23 +128,14 @@ function CourseDetail(props) {
                     <Grid container alignItems="center">
                       <Box display="flex" flexDirection="column" ml={1}>
                         <Box display="flex" alignItems="center">
-                          <PersonAddIcon
-                            fontSize="small"
-                            style={{ margin: "0 10" }}
-                          />
-                          {userList && userList.lstHocVien
-                            ? userList.lstHocVien.length
-                            : "0"}
+                          <PersonAddIcon fontSize="small" style={{ margin: "0 10" }} />
+                          {userList && userList.lstHocVien ? userList.lstHocVien.length : "0"}
                         </Box>
                         <Typography>Enerolled</Typography>
                       </Box>
                       {userListRender}
                       <Tooltip title="Show All">
-                        <Switch
-                          classes={switchStyles}
-                          checked={onShow}
-                          onChange={(e) => setOnShow(e.target.checked)}
-                        />
+                        <Switch classes={switchStyles} checked={onShow} onChange={(e) => setOnShow(e.target.checked)} />
                       </Tooltip>
                     </Grid>
                   )}
@@ -188,13 +157,13 @@ function CourseDetail(props) {
             loading={loading}
             imageLink={courseDetail.hinhAnh}
             courseId={match.params.id}
+            courseName={courseDetail.maKhoaHoc}
           />
         </Box>
       </Grid>
     </Grid>
   );
 }
-
 const mapStateToProps = (state) => {
   return {
     courseDetail: state.courses.courseDetail,
@@ -205,14 +174,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onFetchCourseDetail: (courseId) =>
-      dispatch(actions.fetchCourseDetail(courseId)),
-    onFetchUserListInThisCourse: (courseId) =>
-      dispatch(actions.fetchUserListInThisCourse(courseId)),
+    onFetchCourseDetail: (courseId) => dispatch(actions.fetchCourseDetail(courseId)),
+    onFetchUserListInThisCourse: (courseId) => dispatch(actions.fetchUserListInThisCourse(courseId)),
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withRouter(CourseDetail));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(CourseDetail));

@@ -94,12 +94,11 @@ export const fetchCourseApprovalPending = (selectedUser) => {
     };
     const data = {
       taiKhoan: selectedUser.taiKhoan,
+      // taiKhoan: "quangsiad",
     };
     axios({ method: "post", url, headers, data })
       .then((response) => {
-        dispatch(
-          fetchCourseApprovalPendingSuccess(response.data, selectedUser)
-        );
+        dispatch(fetchCourseApprovalPendingSuccess(response.data, selectedUser));
       })
       .catch((error) => {
         dispatch(fetchCourseApprovalPendingFail(error.response.data));
@@ -194,20 +193,12 @@ export const addUser = (values, isEdit, tabIndex, group) => {
     axios({ method, url, headers, data })
       .then((response) => {
         if (isEdit) {
-          dispatch(
-            addUserSuccess(
-              `Cập nhật tài khoản ${response.data.taiKhoan} thành công!`
-            )
-          );
+          dispatch(addUserSuccess(`Cập nhật tài khoản ${response.data.taiKhoan} thành công!`));
           dispatch(fetchUsers(group));
           // simulating Click to refresh edit page
           dispatch(editUserClick(response.data, tabIndex));
         } else {
-          dispatch(
-            addUserSuccess(
-              `Thêm tài khoản ${response.data.taiKhoan} thành công!`
-            )
-          );
+          dispatch(addUserSuccess(`Thêm tài khoản ${response.data.taiKhoan} thành công!`));
           dispatch(fetchUsers(group));
         }
       })
@@ -417,13 +408,9 @@ export const searchUser = (keyWord, group) => {
   return (dispatch) => {
     dispatch(searchUserStart());
     axios
-      .get(
-        `/QuanLyNguoiDung/TimKiemNguoiDung?MaNhom=${group}&tuKhoa=${keyWord}`
-      )
+      .get(`/QuanLyNguoiDung/TimKiemNguoiDung?MaNhom=${group}&tuKhoa=${keyWord}`)
       .then((response) => {
-        !keyWord
-          ? dispatch(fetchUsers(group))
-          : dispatch(searchUserSuccess(response.data));
+        !keyWord ? dispatch(fetchUsers(group)) : dispatch(searchUserSuccess(response.data));
       })
       .catch((error) => {
         dispatch(searchUserFail(error));
